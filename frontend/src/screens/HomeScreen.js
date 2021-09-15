@@ -9,13 +9,18 @@ const HomeScreen = () => {
       <h2>Latest Products</h2>
 
       <Row>
-        {/* <CardGroup> */}
         {products.map((product) => (
-          <Col sm={12} md={6} lg={4} xl={3}>
+          <Col
+            key={product._id}
+            className='align-items-stretch d-flex'
+            sm={12}
+            md={6}
+            lg={4}
+            xl={3}
+          >
             <Product product={product} />
           </Col>
         ))}
-        {/* </CardGroup> */}
       </Row>
     </>
   )
