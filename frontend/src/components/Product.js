@@ -1,18 +1,19 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { Card } from 'react-bootstrap'
-import Rating from './Rating'
+import { Rating } from './Rating'
 
-const Product = ({ product }) => {
+export const Product = ({ product }) => {
   return (
     <Card className='my-3 p-3 rounded'>
-      <a href={`/product/${product._id}`}>
+      <Link to={`/product/${product._id}`}>
         <Card.Img src={product.image} variant='top' />
-      </a>
+      </Link>
 
       <Card.Body className='d-flex flex-column justify-content-between'>
-        <a href={`/product/${product._id}`}>
+        <Link to={`/product/${product._id}`}>
           <Card.Title as='div'>{product.name}</Card.Title>
-        </a>
+        </Link>
 
         <Card.Text as='div'>
           <Rating
@@ -26,5 +27,3 @@ const Product = ({ product }) => {
     </Card>
   )
 }
-
-export default Product
