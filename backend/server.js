@@ -9,6 +9,7 @@ dotenv.config()
 //calling the connection to database
 connectDB()
 
+//initializing express
 const app = express()
 
 app.get('/', (req, res) => {

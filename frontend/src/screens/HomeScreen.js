@@ -7,6 +7,7 @@ export const HomeScreen = () => {
   const [products, setProducts] = useState([])
 
   //everytime the component loads, useEffect will run
+  //and will trigger a function to fetch the data and update the products state
   useEffect(() => {
     const fetchProducts = async () => {
       const { data } = await axios.get('/api/products')
