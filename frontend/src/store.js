@@ -3,7 +3,7 @@ import thunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import { productListReducer } from './reducers/productReducers'
 
-//names inside this combineReducers are the piece of state (ex: productList)
+//names inside this combineReducers are the parts of state that will be selected by useSelector (ex: state.productList)
 const reducer = combineReducers({
   productList: productListReducer,
 })
