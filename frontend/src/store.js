@@ -1,11 +1,15 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
-import { productListReducer } from './reducers/productReducers'
+import {
+  productDetailsReducer,
+  productListReducer,
+} from './reducers/productReducers'
 
 //names inside this combineReducers are the parts of state that will be selected by useSelector (ex: state.productList)
 const reducer = combineReducers({
   productList: productListReducer,
+  productDetails: productDetailsReducer,
 })
 
 const initialState = {}
