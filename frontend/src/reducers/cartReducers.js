@@ -8,6 +8,8 @@ export const cartReducer = (state = { cartItems: [] }, action) => {
       //to check if the item is already added to cart
       const existItem = state.cartItems.find((x) => x.product === item.product)
 
+      //if item already exist in the cartItems, replace it with the item (action.payload)
+      //will not increase the qty in the cart of same item but will replace it (for improvement)
       if (existItem) {
         return {
           ...state,
@@ -16,6 +18,7 @@ export const cartReducer = (state = { cartItems: [] }, action) => {
           ),
         }
       } else {
+        //spread with what's already in the state & set cartItems to an array with current items plus new item
         return {
           ...state,
           cartItems: [...state.cartItems, item],

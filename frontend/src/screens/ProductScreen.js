@@ -9,7 +9,8 @@ import { listProductDetails } from '../actions/productActions'
 
 export const ProductScreen = ({ match, history }) => {
   //qty select using useState as qty is going to be part of component level state
-  const [qty, setQty] = useState(0)
+  //default state is 1 qty so if we click add to cart w/o choosing qty, default will be 1
+  const [qty, setQty] = useState(1)
 
   const dispatch = useDispatch()
 
