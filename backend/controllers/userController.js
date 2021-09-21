@@ -25,6 +25,39 @@ export const authUser = asyncHandler(async (req, res) => {
   }
 })
 
+//@desc Register a new user | @route POST /api/users | @access Public
+export const registerUser = asyncHandler(async (req, res) => {
+  const { name, email, password } = req.body
+
+  const userExists = await User.findOne({ email })
+
+  if (userExists) {
+    res.status(400) //bad request status
+    throw new Error('User already exists')
+  }
+
+  //password will be saved as hashed and not as plain text based on the middleware declared in userModel
+  //even though this is create this is same as save in the userModel middleware called in "pre" method
+  const user = await User.create({
+    name,
+    email,
+    password,
+  })
+
+  if (user) {
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      token: generateToken(user._id), //include token because we want to authenticate after registration
+    })
+  } else {
+    res.status(400)
+    throw new Error('Invalid user data')
+  }
+})
+
 //@desc Get user profile | @route GET /api/users/profile | @access Private
 export const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id)
