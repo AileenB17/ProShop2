@@ -5,6 +5,7 @@ import { User } from '../models/userModel.js'
 //@desc Auth user & get token | @route POST /api/users/login | @access Public
 export const authUser = asyncHandler(async (req, res) => {
   //from req.body, we only need email & password
+  //email & pw are passed in from the login action
   const { email, password } = req.body
 
   //find in the user list the email that will match email from req.body
