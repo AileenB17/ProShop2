@@ -5,49 +5,67 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Message } from '../components/Message'
 import { Loader } from '../components/Loader'
 import { FormContainer } from '../components/FormContainer'
-import { login } from '../actions/userActions'
+import { register } from '../actions/userActions'
 
-export const LoginScreen = ({ history, location }) => {
+export const RegisterScreen = ({ location, history }) => {
   //component level state - values being changed on the screen
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [message, setMessage] = useState(null)
 
   const dispatch = useDispatch()
 
-  const userLogin = useSelector((state) => state.userLogin)
-  const { loading, error, userInfo } = userLogin
+  const userRegister = useSelector((state) => state.userRegister)
+  const { loading, error, userInfo } = userRegister
 
-  //location.search - will have the url query string
   const redirect = location.search ? location.search.split('=')[1] : '/'
 
-  //we don't want this login screen to load if the user is already logged in
-  //if user is already logged in (userInfo is not null), redirect to the defined 'redirect' value above
   useEffect(() => {
     if (userInfo) {
       history.push(redirect)
     }
   }, [history, userInfo, redirect])
 
-  //dispatch login action (w/c takes in email & pw) once we submit the form
+  //dispatch register action with checking of password and confirm password
   const submitHandler = (e) => {
-    e.preventDefault() //to prevent the page to refresh and lose the data input by user
-    dispatch(login(email, password))
+    e.preventDefault()
+    if (password !== confirmPassword) {
+      setMessage('Passwords do not match')
+    } else {
+      dispatch(register(name, email, password))
+    }
   }
 
   return (
     <FormContainer>
-      <h2>Sign In</h2>
+      <h2>Sign Up</h2>
+
+      {/* this will come from submitHandler condition (message as component level state) */}
+      {message && <Message variant='danger'>{message}</Message>}
+
       {error && <Message variant='danger'>{error}</Message>}
       {loading && <Loader />}
 
       <Form onSubmit={submitHandler}>
+        <Form.Group controlId='name'>
+          <Form.Label>Name</Form.Label>
+          <Form.Control
+            type='text'
+            placeholder='Enter name'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          ></Form.Control>
+        </Form.Group>
+
         <Form.Group controlId='email'>
           <Form.Label>Email Address</Form.Label>
           <Form.Control
             type='email'
             placeholder='Enter email'
             value={email}
-            onChange={(e) => setEmail(e.target.value)} //whatever we typed in
+            onChange={(e) => setEmail(e.target.value)}
           ></Form.Control>
         </Form.Group>
 
@@ -61,16 +79,26 @@ export const LoginScreen = ({ history, location }) => {
           ></Form.Control>
         </Form.Group>
 
+        <Form.Group controlId='confirmPassword'>
+          <Form.Label>Confirm Password</Form.Label>
+          <Form.Control
+            type='password'
+            placeholder='Confirm password'
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          ></Form.Control>
+        </Form.Group>
+
         <Button className='mt-3' type='submit' variant='primary'>
-          Sign In
+          Register
         </Button>
       </Form>
 
       <Row className='py-3'>
         <Col>
-          New Customer?{' '}
-          <Link to={redirect ? `/register?redirect=${redirect}` : '/register'}>
-            Register
+          Have an account?{' '}
+          <Link to={redirect ? `/login?redirect=${redirect}` : '/login'}>
+            Login
           </Link>
         </Col>
       </Row>
