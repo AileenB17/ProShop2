@@ -21,16 +21,16 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 }
 
 //define the middleware to encrypt password before saving the data from user registration
+//check if the password field is new data or modified as we don't want to create new hash if there's a profile update only
+// use mongoose method isModified to check which field you want to know if modified or not
 
 userSchema.pre('save', async function (next) {
-  //check if the password field is new data or modified as we don't want to create new hash if there's a profile update only
-  // use mongoose method isModified to check which field you want to know if modified or not
   if (!this.isModified('password')) {
     next()
   }
 
   const salt = await bcrypt.genSalt(10) //to hash password asynchronously
-  this.password = await bcrypt.hash(this.password, salt)
+  this.password = await bcrypt.hash(this.password, salt) //this.password pertains to the pw of the user we are creating
 })
 
 export const User = mongoose.model('User', userSchema)

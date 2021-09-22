@@ -37,13 +37,14 @@ export const registerUser = asyncHandler(async (req, res) => {
   }
 
   //password will be saved as hashed and not as plain text based on the middleware declared in userModel
-  //even though this is create this is same as save in the userModel middleware called in "pre" method
+  //even though this is create, this is same as save in the userModel middleware called in "pre" method
   const user = await User.create({
     name,
     email,
     password,
   })
 
+  //if user is successfully created, send the data for authentication
   if (user) {
     res.status(201).json({
       _id: user._id,
