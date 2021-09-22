@@ -3,6 +3,7 @@ import {
   USER_LOGIN_FAIL,
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
+  USER_LOGOUT,
 } from '../constants/userConstants'
 
 export const login = (email, password) => async (dispatch) => {
@@ -43,4 +44,16 @@ export const login = (email, password) => async (dispatch) => {
           : error.message,
     })
   }
+}
+
+export const logout = () => (dispatch) => {
+  localStorage.removeItem('userInfo')
+  dispatch({ type: USER_LOGOUT })
+
+  //dispatch of  user details and order list my Reset will empty the state upon logout
+  //so when a new user log in, order and details of previous logged in user will not be shown
+  // dispatch({ type: USER_DETAILS_RESET })
+  // dispatch({ type: ORDER_LIST_MY_RESET })
+
+  // dispatch({ type: USER_LIST_RESET })
 }
