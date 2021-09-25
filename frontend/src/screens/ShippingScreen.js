@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Form, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormContainer } from '../components/FormContainer'
+import { CheckoutSteps } from '../components/CheckoutSteps'
 import { saveShippingAddress } from '../actions/cartActions'
 
 export const ShippingScreen = ({ history }) => {
@@ -29,6 +30,9 @@ export const ShippingScreen = ({ history }) => {
 
   return (
     <FormContainer>
+      {/* Shipping screen should only passed in props {step1} Sign In and {step2} Shipping to the CheckoutSteps component */}
+      <CheckoutSteps step1 step2 />
+
       <h2>Shipping</h2>
       <Form onSubmit={submitHandler}>
         <Form.Group controlId='address'>
