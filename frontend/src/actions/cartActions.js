@@ -2,6 +2,7 @@ import axios from 'axios'
 import {
   CART_ADD_ITEM,
   CART_REMOVE_ITEM,
+  CART_SAVE_PAYMENT_METHOD,
   CART_SAVE_SHIPPING_ADDRESS,
 } from '../constants/cartConstants'
 
@@ -33,7 +34,7 @@ export const removeFromCart = (id) => (dispatch, getState) => {
 }
 
 //this action will be called from ShippingScreen.
-//(data) is whatever is entered in the form that will be saved to the local storage not in database server
+//(data) is the shipping address entered in the ShippingScreen form that will be saved to the local storage not in database server
 export const saveShippingAddress = (data) => (dispatch) => {
   dispatch({
     type: CART_SAVE_SHIPPING_ADDRESS,
@@ -41,4 +42,15 @@ export const saveShippingAddress = (data) => (dispatch) => {
   })
 
   localStorage.setItem('shippingAddress', JSON.stringify(data))
+}
+
+//will be called from PaymentScreen.
+//(data) is the payment method chosen in the PaymentScreen form that will be saved to the local storage not in database server
+export const savePaymentMethod = (data) => (dispatch) => {
+  dispatch({
+    type: CART_SAVE_PAYMENT_METHOD,
+    payload: data,
+  })
+
+  localStorage.setItem('paymentMethod', JSON.stringify(data))
 }

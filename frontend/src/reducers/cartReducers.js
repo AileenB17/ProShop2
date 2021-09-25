@@ -1,6 +1,7 @@
 import {
   CART_ADD_ITEM,
   CART_REMOVE_ITEM,
+  CART_SAVE_PAYMENT_METHOD,
   CART_SAVE_SHIPPING_ADDRESS,
 } from '../constants/cartConstants'
 
@@ -40,10 +41,15 @@ export const cartReducer = (
 
     case CART_SAVE_SHIPPING_ADDRESS:
       return {
-        ...state, //copy previous cart state
+        ...state, //copy initial state
         shippingAddress: action.payload, //add shippingAddress object to the cart state (data from the form passed in to the action)
       }
 
+    case CART_SAVE_PAYMENT_METHOD:
+      return {
+        ...state, //copy initial state
+        paymentMethod: action.payload, //add paymentMethod object to the cart state (data from the PaymentScreen)
+      }
     default:
       return state
   }
