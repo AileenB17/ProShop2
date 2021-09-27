@@ -15,6 +15,7 @@ import {
 import {
   orderCreateReducer,
   orderDetailsReducer,
+  orderPayReducer,
 } from './reducers/orderReducers'
 
 //names inside this combineReducers are the parts of state that will be selected by useSelector (ex: state.productList)
@@ -28,6 +29,7 @@ const reducer = combineReducers({
   userUpdateProfile: userUpdateProfileReducer,
   orderCreate: orderCreateReducer,
   orderDetails: orderDetailsReducer,
+  orderPay: orderPayReducer,
 })
 
 const cartItemsFromStorage = localStorage.getItem('cartItems')

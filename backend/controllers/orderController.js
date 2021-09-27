@@ -21,7 +21,7 @@ export const addOrderItems = asyncHandler(async (req, res) => {
   } else {
     const order = new Order({
       orderItems,
-      user: req.user._id,
+      user: req.user._id, //we have access on this thru protect middleware
       shippingAddress,
       paymentMethod,
       itemsPrice,
@@ -46,6 +46,32 @@ export const getOrderById = asyncHandler(async (req, res) => {
 
   if (order) {
     res.json(order)
+  } else {
+    res.status(404)
+    throw new Error('Order not found')
+  }
+})
+
+//@desc Update order to paid | @route PUT /api/orders/:id/pay | @access Private
+export const updateOrderToPaid = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id)
+
+  //if order is found, update below order properties and save
+  if (order) {
+    order.isPaid = true
+    order.paidAt = Date.now()
+
+    //will come from PayPal response that is passed in thru the payOrder action
+    order.paymentResult = {
+      id: req.body.id,
+      status: req.body.status,
+      update_time: req.body.update_time,
+      email_address: req.body.payer.email_address,
+    }
+
+    const updatedOrder = await order.save()
+
+    res.json(updatedOrder) //send back the updatedOrder to orderAction
   } else {
     res.status(404)
     throw new Error('Order not found')
