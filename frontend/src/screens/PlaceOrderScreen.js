@@ -1,11 +1,14 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { Message } from '../components/Message'
 import { CheckoutSteps } from '../components/CheckoutSteps'
-import { Link } from 'react-router-dom'
+import { createOrder } from '../actions/orderActions'
 
-export const PlaceOrderScreen = () => {
+export const PlaceOrderScreen = ({ history }) => {
+  const dispatch = useDispatch()
+
   //in this screen, we will be needing the whole cart state
   const cart = useSelector((state) => state.cart)
 
@@ -24,8 +27,31 @@ export const PlaceOrderScreen = () => {
     Number(cart.taxPrice)
   ).toFixed(2)
 
+  const orderCreate = useSelector((state) => state.orderCreate)
+  const { order, success, error } = orderCreate
+
+  //if the order has been successfully placed (success from state.orderCreate), this will redirect to Order Screen
+  useEffect(() => {
+    if (success) {
+      history.push(`/order/${order._id}`) //we did not put as dependency the order._id as this is not existing yet
+    }
+    // eslint-disable-next-line
+  }, [history, success])
+
   const placeOrderHandler = () => {
-    console.log('placeorder')
+    //Dispatch createOrder action and passed in the order object (destructured to assign the values)
+    dispatch(
+      createOrder({
+        orderItems: cart.cartItems,
+        shippingAddress: cart.shippingAddress,
+        // paymentMethod: cart.paymentMethod, //Brad's code as he did not save in local storage
+        paymentMethod: cart.paymentMethod.paymentMethod,
+        itemsPrice: cart.itemsPrice,
+        shippingPrice: cart.shippingPrice,
+        taxPrice: cart.taxPrice,
+        totalPrice: cart.totalPrice,
+      })
+    )
   }
 
   return (
@@ -131,9 +157,9 @@ export const PlaceOrderScreen = () => {
                 </Row>
               </ListGroup.Item>
 
-              {/* <ListGroup.Item>
+              <ListGroup.Item>
                 {error && <Message variant='danger'>{error}</Message>}
-              </ListGroup.Item> */}
+              </ListGroup.Item>
 
               <ListGroup.Item className='d-grid gap-2'>
                 <Button
