@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Form, Button, Row, Col } from 'react-bootstrap'
+import { Form, Button, Row, Col, Table } from 'react-bootstrap'
+import { LinkContainer } from 'react-router-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { Message } from '../components/Message'
 import { Loader } from '../components/Loader'
 import { getUserDetails, updateUserProfile } from '../actions/userActions'
+import { listMyOrders } from '../actions/orderActions'
 
 export const ProfileScreen = ({ location, history }) => {
   //component level state
@@ -24,12 +26,19 @@ export const ProfileScreen = ({ location, history }) => {
   const userUpdateProfile = useSelector((state) => state.userUpdateProfile)
   const { success } = userUpdateProfile
 
+  const orderListMy = useSelector((state) => state.orderListMy)
+  const { loading: loadingOrders, error: errorOrders, orders } = orderListMy
+  //need to rename loading and error here as this has been declared and used already in userDetails function above
+
   useEffect(() => {
     if (!userInfo) {
       history.push('/login')
     } else {
       if (!user.name) {
         dispatch(getUserDetails('profile')) //'profile' will be passed in to the action as the (id) not an actual user id
+
+        //dipatch user logged in orders
+        dispatch(listMyOrders())
       } else {
         //else, display user's name and email once the profile loads
         //this will only run after we successfully loaded the user data after dispatching getUserDetails action)
@@ -112,7 +121,64 @@ export const ProfileScreen = ({ location, history }) => {
         </Form>
       </Col>
       <Col md={9}>
-        <h2>My Orders</h2>
+        <h3>My Orders</h3>
+        {loadingOrders ? (
+          <Loader />
+        ) : errorOrders ? (
+          <Message variant='danger'>{errorOrders}</Message>
+        ) : (
+          <Table striped bordered hover responsive className='table-sm'>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>DATE</th>
+                <th>TOTAL</th>
+                <th>PAID</th>
+                <th>DELIVERED</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr key={order._id}>
+                  <td>{order._id}</td>
+
+                  {/* instead of substring, i think luxon works better in date formatting */}
+                  <td>{order.createdAt.substring(0, 10)}</td>
+
+                  <td>{order.totalPrice}</td>
+
+                  <td>
+                    {order.isPaid ? (
+                      order.paidAt.substring(0, 10)
+                    ) : (
+                      <i className='fas fa-times' style={{ color: 'red' }}></i>
+                    )}
+                  </td>
+
+                  <td>
+                    {order.isDelivered ? (
+                      order.deliveredAt.substring(0, 10)
+                    ) : (
+                      <i className='fas fa-times' style={{ color: 'red' }}></i>
+                    )}
+                  </td>
+
+                  <td>
+                    <LinkContainer
+                      to={`/order/${order._id}`}
+                      className='d-grid gap-2'
+                    >
+                      <Button className='btn-sm' variant='light'>
+                        Details
+                      </Button>
+                    </LinkContainer>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
       </Col>
     </Row>
   )
