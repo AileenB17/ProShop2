@@ -4,13 +4,20 @@ import { Table, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { Message } from '../components/Message'
 import { Loader } from '../components/Loader'
-import { listProducts } from '../actions/productActions'
+import { listProducts, deleteProduct } from '../actions/productActions'
 
 export const ProductListScreen = ({ history, match }) => {
   const dispatch = useDispatch()
 
   const productList = useSelector((state) => state.productList)
   const { loading, error, products } = productList
+
+  const productDelete = useSelector((state) => state.productDelete)
+  const {
+    loading: loadingDelete,
+    error: errorDelete,
+    success: successDelete,
+  } = productDelete
 
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
@@ -23,12 +30,14 @@ export const ProductListScreen = ({ history, match }) => {
     } else {
       history.push('/login')
     }
-  }, [dispatch, history, userInfo])
+  }, [dispatch, history, userInfo, successDelete])
+  //add successDelete as dependency so when successDelete happens, useEffect runs again & show the list without the deleted product
 
-  //add window.confirm function to show an alert to confirm delete user
   const deleteHandler = (id) => {
+    //add window.confirm function to show an alert to confirm delete user
     if (window.confirm('Are you sure?')) {
-      //Dispatch delete products action here
+      //Dispatch delete product action
+      dispatch(deleteProduct(id))
     }
   }
 
@@ -49,6 +58,9 @@ export const ProductListScreen = ({ history, match }) => {
           </Button>
         </Col>
       </Row>
+
+      {loadingDelete && <Loader />}
+      {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
 
       {loading ? (
         <Loader />
