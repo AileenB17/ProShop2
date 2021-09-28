@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { ORDER_LIST_MY_RESET } from '../constants/orderConstants'
 import {
   USER_DETAILS_FAIL,
   USER_DETAILS_REQUEST,
@@ -63,7 +64,7 @@ export const logout = () => (dispatch) => {
   //dispatch of  user details and order list my Reset will empty the state upon logout
   //so when a new user log in, order and details of previous logged in user will not be shown
   dispatch({ type: USER_DETAILS_RESET })
-  // dispatch({ type: ORDER_LIST_MY_RESET })
+  dispatch({ type: ORDER_LIST_MY_RESET })
 
   // dispatch({ type: USER_LIST_RESET })
 }
