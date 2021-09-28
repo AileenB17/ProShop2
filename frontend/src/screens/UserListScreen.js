@@ -4,7 +4,7 @@ import { Table, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { Message } from '../components/Message'
 import { Loader } from '../components/Loader'
-import { listUsers } from '../actions/userActions'
+import { listUsers, deleteUser } from '../actions/userActions'
 
 export const UserListScreen = ({ history }) => {
   const dispatch = useDispatch()
@@ -15,6 +15,10 @@ export const UserListScreen = ({ history }) => {
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
 
+  const userDelete = useSelector((state) => state.userDelete)
+  const { success: successDelete } = userDelete
+  //from userDelete reducer, we only need success and rename it to successDelete here
+
   //to prevent non-admin users to access the user list screen and not logged in users to access the route,
   //add conditionals to redirect them to login page
   useEffect(() => {
@@ -24,10 +28,14 @@ export const UserListScreen = ({ history }) => {
       history.push('/login')
     }
     dispatch(listUsers())
-  }, [dispatch, history, userInfo])
+  }, [dispatch, history, userInfo, successDelete])
+  //we add as a dependency the successDelete as we want the useEffect to run again and load the updated users list
 
+  //add window.confirm function to show an alert to confirm delete user
   const deleteHandler = (id) => {
-    console.log('delete')
+    if (window.confirm('Are you sure?')) {
+      dispatch(deleteUser(id))
+    }
   }
 
   return (
