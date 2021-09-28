@@ -88,7 +88,7 @@ export const UserEditScreen = ({ match, history }) => {
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group controlId='isAdmin'>
+            <Form.Group className='mt-2' controlId='isAdmin'>
               <Form.Check
                 type='checkbox'
                 label='isAdmin'
@@ -97,7 +97,7 @@ export const UserEditScreen = ({ match, history }) => {
               ></Form.Check>
             </Form.Group>
 
-            <Button type='submit' variant='primary'>
+            <Button className='mt-3' type='submit' variant='primary'>
               Update
             </Button>
           </Form>

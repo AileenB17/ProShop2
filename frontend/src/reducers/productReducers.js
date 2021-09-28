@@ -26,7 +26,7 @@ export const productDetailsReducer = (
 ) => {
   switch (action.type) {
     case PRODUCT_DETAILS_REQUEST:
-      // return { loading: true, ...state } //this creates a bug that shows slow image loading
+      // return { loading: true, ...state } //Brad's code but this creates a bug that shows previous state's product image
       return { loading: true, product: { reviews: [] } }
     case PRODUCT_DETAILS_SUCCESS:
       return { loading: false, product: action.payload }
