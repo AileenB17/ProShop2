@@ -5,11 +5,15 @@ import {
   registerUser,
   getUserProfile,
   updateUserProfile,
+  getUsers,
 } from '../controllers/userController.js'
-import { protect } from '../middleware/authMiddleware.js'
+import { protect, admin } from '../middleware/authMiddleware.js'
 
-router.route('/').post(registerUser)
+//for user registration | and getting all users with protected route for admin users' access only
+router.route('/').post(registerUser).get(protect, admin, getUsers)
+
 router.post('/login', authUser)
+
 router
   .route('/profile')
   .get(protect, getUserProfile)
