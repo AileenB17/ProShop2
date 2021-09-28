@@ -19,9 +19,12 @@ import {
   USER_REGISTER_FAIL,
   USER_REGISTER_REQUEST,
   USER_REGISTER_SUCCESS,
+  USER_UPDATE_FAIL,
   USER_UPDATE_PROFILE_FAIL,
   USER_UPDATE_PROFILE_REQUEST,
   USER_UPDATE_PROFILE_SUCCESS,
+  USER_UPDATE_REQUEST,
+  USER_UPDATE_SUCCESS,
 } from '../constants/userConstants'
 
 export const login = (email, password) => async (dispatch) => {
@@ -271,6 +274,44 @@ export const deleteUser = (id) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: USER_DELETE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}
+
+export const updateUser = (user) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: USER_UPDATE_REQUEST,
+    })
+
+    //this will give us access to the logged in user's object
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    //Sending headers with application/json content-type and passed the token here thru protected routes
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    //PUT (update) request passing in the route, user object, and the config (token will be checked in the authMiddleware thru protect function)
+    //If user exists, the updateUser controller will return updated user object
+    const { data } = await axios.put(`/api/users/${user._id}`, user, config)
+
+    dispatch({ type: USER_UPDATE_SUCCESS })
+
+    //data here is the updated user object coming from the updateUser controller
+    dispatch({ type: USER_DETAILS_SUCCESS, payload: data })
+  } catch (error) {
+    dispatch({
+      type: USER_UPDATE_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message
