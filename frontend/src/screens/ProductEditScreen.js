@@ -5,7 +5,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Message } from '../components/Message'
 import { Loader } from '../components/Loader'
 import { FormContainer } from '../components/FormContainer'
-import { listProductDetails } from '../actions/productActions'
+import { listProductDetails, updateProduct } from '../actions/productActions'
+import {
+  PRODUCT_DETAILS_RESET,
+  PRODUCT_UPDATE_RESET,
+} from '../constants/productConstants'
 
 export const ProductEditScreen = ({ match, history }) => {
   const productId = match.params.id
@@ -24,24 +28,52 @@ export const ProductEditScreen = ({ match, history }) => {
   const productDetails = useSelector((state) => state.productDetails)
   const { loading, error, product } = productDetails
 
+  const productUpdate = useSelector((state) => state.productUpdate)
+  const {
+    loading: loadingUpdate,
+    error: errorUpdate,
+    success: successUpdate,
+  } = productUpdate
+
   useEffect(() => {
-    if (!product.name || product._id !== productId) {
-      dispatch(listProductDetails(productId))
+    if (successUpdate) {
+      //check success update then if true, redirect to product list
+      dispatch({ type: PRODUCT_UPDATE_RESET })
+
+      //add this product details reset so when you edit same product again, it will not show the previous state
+      dispatch({ type: PRODUCT_DETAILS_RESET })
+      history.push('/admin/productlist')
     } else {
-      setName(product.name)
-      setPrice(product.price)
-      setImage(product.image)
-      setBrand(product.brand)
-      setCategory(product.category)
-      setCountInStock(product.countInStock)
-      setDescription(product.description)
+      if (!product.name || product._id !== productId) {
+        dispatch(listProductDetails(productId))
+      } else {
+        setName(product.name)
+        setPrice(product.price)
+        setImage(product.image)
+        setBrand(product.brand)
+        setCategory(product.category)
+        setCountInStock(product.countInStock)
+        setDescription(product.description)
+      }
     }
-  }, [product, productId, dispatch, history])
+  }, [product, productId, dispatch, history, successUpdate])
 
   //dispatch update product
   const submitHandler = (e) => {
     e.preventDefault()
-    //dipatch update product action
+    //dipatch update product action passing in the destructured product object with values from the form
+    dispatch(
+      updateProduct({
+        _id: productId,
+        name,
+        price,
+        image,
+        brand,
+        category,
+        countInStock,
+        description,
+      })
+    )
   }
 
   return (
@@ -51,6 +83,9 @@ export const ProductEditScreen = ({ match, history }) => {
       </Link>
       <FormContainer>
         <h2>Edit Product</h2>
+
+        {loadingUpdate && <Loader />}
+        {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
 
         {loading ? (
           <Loader />
