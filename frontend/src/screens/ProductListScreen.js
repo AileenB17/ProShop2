@@ -41,7 +41,7 @@ export const ProductListScreen = ({ history, match }) => {
 
     //to prevent non-admin users to access the product list screen and not logged in users to access the route,
     //add conditionals to redirect them to login page
-    if (!userInfo.isAdmin) {
+    if (!userInfo || !userInfo.isAdmin) {
       history.push('/login')
     }
 

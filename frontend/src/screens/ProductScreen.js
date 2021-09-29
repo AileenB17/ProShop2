@@ -6,6 +6,7 @@ import { Rating } from '../components/Rating'
 import { Loader } from '../components/Loader'
 import { Message } from '../components/Message'
 import { listProductDetails } from '../actions/productActions'
+import { PRODUCT_DETAILS_RESET } from '../constants/productConstants'
 
 export const ProductScreen = ({ match, history }) => {
   //qty select using useState as qty is going to be part of component level state
@@ -19,6 +20,7 @@ export const ProductScreen = ({ match, history }) => {
 
   //everytime the component loads & dependecy is changed, useEffect will run
   useEffect(() => {
+    dispatch({ type: PRODUCT_DETAILS_RESET })
     dispatch(listProductDetails(match.params.id))
   }, [dispatch, match])
 

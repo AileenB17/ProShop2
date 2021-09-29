@@ -8,6 +8,7 @@ import {
   PRODUCT_DELETE_SUCCESS,
   PRODUCT_DETAILS_FAIL,
   PRODUCT_DETAILS_REQUEST,
+  PRODUCT_DETAILS_RESET,
   PRODUCT_DETAILS_SUCCESS,
   PRODUCT_LIST_FAIL,
   PRODUCT_LIST_REQUEST,
@@ -33,12 +34,18 @@ export const productDetailsReducer = (
 ) => {
   switch (action.type) {
     case PRODUCT_DETAILS_REQUEST:
-      // return { loading: true, ...state } //Brad's code but this creates a bug that shows previous state's product image
-      return { loading: true, product: { reviews: [] } }
+      //Brad's code but this creates a bug that shows previous state's product image so use PRODUCT_DETAILS_RESET in Product Screen
+      return { loading: true, ...state }
+
+    // this code helps in not showing the previous product in the ProductScreen but causing an error in the Product Edit Screen
+    // return { loading: true, product: { reviews: [] } }
+
     case PRODUCT_DETAILS_SUCCESS:
       return { loading: false, product: action.payload }
     case PRODUCT_DETAILS_FAIL:
       return { loading: false, error: action.payload }
+    case PRODUCT_DETAILS_RESET:
+      return { product: { reviews: [] } }
     default:
       return state
   }
