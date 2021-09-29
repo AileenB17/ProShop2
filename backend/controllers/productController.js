@@ -35,7 +35,8 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 
 // @desc Create a product | @route POST /api/products | @access Private/Admin
 export const createProduct = asyncHandler(async (req, res) => {
-  //assign values to properties of product schema. Ratings and reviews will take in default values.
+  //assign values to properties of product schema as we have received empty object only from the createProduct action.
+  //Ratings and reviews will take in default values.
   const product = new Product({
     name: 'Sample name',
     price: 0,

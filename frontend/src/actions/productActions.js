@@ -1,5 +1,8 @@
 import axios from 'axios'
 import {
+  PRODUCT_CREATE_FAIL,
+  PRODUCT_CREATE_REQUEST,
+  PRODUCT_CREATE_SUCCESS,
   PRODUCT_DELETE_FAIL,
   PRODUCT_DELETE_REQUEST,
   PRODUCT_DELETE_SUCCESS,
@@ -79,6 +82,44 @@ export const deleteProduct = (id) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: PRODUCT_DELETE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}
+
+export const createProduct = () => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: PRODUCT_CREATE_REQUEST,
+    })
+
+    //this will give us access to the logged in user's object
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    //Sending headers and passed the token here thru protected routes
+    const config = {
+      headers: {
+        // 'Content-Type': 'application/json', //not needed
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    //POST request passing in the route, empty object (sample default), and the config
+    //passing an empty object {} - we are making post request but we are actually not sending any details from the form to the backend
+    const { data } = await axios.post(`/api/products/`, {}, config)
+
+    dispatch({
+      type: PRODUCT_CREATE_SUCCESS,
+      payload: data,
+    })
+  } catch (error) {
+    dispatch({
+      type: PRODUCT_CREATE_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message

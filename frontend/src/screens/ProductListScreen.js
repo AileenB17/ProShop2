@@ -4,7 +4,12 @@ import { Table, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { Message } from '../components/Message'
 import { Loader } from '../components/Loader'
-import { listProducts, deleteProduct } from '../actions/productActions'
+import {
+  listProducts,
+  deleteProduct,
+  createProduct,
+} from '../actions/productActions'
+import { PRODUCT_CREATE_RESET } from '../constants/productConstants'
 
 export const ProductListScreen = ({ history, match }) => {
   const dispatch = useDispatch()
@@ -19,18 +24,40 @@ export const ProductListScreen = ({ history, match }) => {
     success: successDelete,
   } = productDelete
 
+  const productCreate = useSelector((state) => state.productCreate)
+  const {
+    loading: loadingCreate,
+    error: errorCreate,
+    success: successCreate,
+    product: createdProduct,
+  } = productCreate
+
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
 
-  //to prevent non-admin users to access the product list screen and not logged in users to access the route,
-  //add conditionals to redirect them to login page
   useEffect(() => {
-    if (userInfo && userInfo.isAdmin) {
-      dispatch(listProducts())
-    } else {
+    //as soon as the useEffect runs, dispatch PRODUCT_CREATE_RESET
+    dispatch({ type: PRODUCT_CREATE_RESET })
+
+    //to prevent non-admin users to access the product list screen and not logged in users to access the route,
+    //add conditionals to redirect them to login page
+    if (!userInfo.isAdmin) {
       history.push('/login')
     }
-  }, [dispatch, history, userInfo, successDelete])
+
+    if (successCreate) {
+      history.push(`/admin/product/${createdProduct._id}/edit`)
+    } else {
+      dispatch(listProducts())
+    }
+  }, [
+    dispatch,
+    history,
+    userInfo,
+    successDelete,
+    successCreate,
+    createdProduct,
+  ])
   //add successDelete as dependency so when successDelete happens, useEffect runs again & show the list without the deleted product
 
   const deleteHandler = (id) => {
@@ -41,8 +68,9 @@ export const ProductListScreen = ({ history, match }) => {
     }
   }
 
-  const createProductHandler = (product) => {
-    //Dispatch create product action here
+  const createProductHandler = () => {
+    //Dispatch create product action here without passiny any values
+    dispatch(createProduct())
   }
 
   return (
@@ -61,6 +89,9 @@ export const ProductListScreen = ({ history, match }) => {
 
       {loadingDelete && <Loader />}
       {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
+
+      {loadingCreate && <Loader />}
+      {errorCreate && <Message variant='danger'>{errorCreate}</Message>}
 
       {loading ? (
         <Loader />
