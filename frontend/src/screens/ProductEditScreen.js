@@ -1,3 +1,4 @@
+import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
@@ -22,6 +23,7 @@ export const ProductEditScreen = ({ match, history }) => {
   const [category, setCategory] = useState('')
   const [countInStock, setCountInStock] = useState(0)
   const [description, setDescription] = useState('')
+  const [uploading, setUploading] = useState(false) //for product image upload
 
   const dispatch = useDispatch()
 
@@ -57,6 +59,31 @@ export const ProductEditScreen = ({ match, history }) => {
       }
     }
   }, [product, productId, dispatch, history, successUpdate])
+
+  const uploadFileHandler = async (e) => {
+    //e.target.files - we have an access in the uploaded files array but since we only use upload.single,
+    //we need to passed in the 1st file in the array only
+    const file = e.target.files[0]
+    const formData = new FormData()
+    formData.append('image', file)
+    setUploading(true)
+
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+
+      const { data } = await axios.post('/api/upload', formData, config)
+
+      setImage(data)
+      setUploading(false)
+    } catch (error) {
+      console.error(error)
+      setUploading(false)
+    }
+  }
 
   //dispatch update product
   const submitHandler = (e) => {
@@ -121,6 +148,16 @@ export const ProductEditScreen = ({ match, history }) => {
                 value={image}
                 onChange={(e) => setImage(e.target.value)}
               ></Form.Control>
+
+              <input
+                type='file'
+                id='image-file'
+                label='Choose File'
+                custom
+                onChange={uploadFileHandler}
+              ></input>
+
+              {uploading && <Loader />}
             </Form.Group>
 
             <Form.Group controlId='brand'>
