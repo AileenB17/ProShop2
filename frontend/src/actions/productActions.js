@@ -20,18 +20,22 @@ import {
   PRODUCT_UPDATE_SUCCESS,
 } from '../constants/productConstants'
 
-//passing in from the HomeScreen the keyword but assigning here the default value as empty string
-//so we can still make the route worked even if no value of keyword has been sent
+//passing in from the HomeScreen the keyword and pageNumber but assigning here the default value as empty string
+//so we can still make the route worked even if no value of keyword and pageNumber has been sent
 export const listProducts =
-  (keyword = '') =>
+  (keyword = '', pageNumber = '') =>
   async (dispatch) => {
     try {
       dispatch({ type: PRODUCT_LIST_REQUEST })
 
       //{data} property is coming from the axios --- this is how we fetch data from backend based on what the controller will return
       //add query (?) here to: [1] Collect the keyword if search box is used or this can be an empty string
-      const { data } = await axios.get(`/api/products?keyword=${keyword}`)
+      //[2] use '&' to add the another query pageNumber (use '&' to any addtl query)
+      const { data } = await axios.get(
+        `/api/products?keyword=${keyword}&pageNumber=${pageNumber}`
+      )
 
+      //payload contains different objects inside {data} such as data.products, data.page so account properly when sending to reducers
       dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data })
     } catch (error) {
       dispatch({

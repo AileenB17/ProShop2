@@ -3,7 +3,13 @@ import { Product } from '../models/productModel.js'
 
 //@desc Fetch all products | @route GET /api/products | @access Public
 export const getProducts = asyncHandler(async (req, res) => {
-  //using req.query, we can access the keyword that has been passed in from the listProducts action (?keyword=)
+  //using req.query, we can access the keyword & pageNumber that has been passed in from the listProducts action (ex: ?keyword=${value})
+
+  //set up pagination functionality
+  //return '1' in the page if there is no pageNumber passed in (meaning we are only in page 1)
+  const pageSize = 8
+  const page = Number(req.query.pageNumber) || 1
+
   //match the queried keyword with the name of the product
   const keyword = req.query.keyword
     ? {
@@ -14,10 +20,16 @@ export const getProducts = asyncHandler(async (req, res) => {
       }
     : {} //else return empty if the keyword passed in is just empty string
 
-  //use of ...keyword - whatever the keyword value above either empty or matched / part of name
-  const products = await Product.find({ ...keyword })
+  //count products (use of ...keyword explained below)
+  const count = await Product.countDocuments({ ...keyword })
 
-  res.json(products)
+  //use of ...keyword - whatever the keyword value above either empty or matched / part of name
+  //use of limit and skip to match the pageSize with number and arrangement of products to be shown
+  const products = await Product.find({ ...keyword })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1))
+
+  res.json({ products, page, pages: Math.ceil(count / pageSize) })
 })
 
 // @desc Fetch single product | @route GET /api/products/:id | @access Public
