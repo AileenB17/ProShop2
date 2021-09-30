@@ -85,3 +85,10 @@ export const getMyOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ user: req.user._id })
   res.json(orders)
 })
+
+//@desc Get all orders | @route GET /api/orders | @access Private/Admin
+export const getOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find({}).populate('user', 'id name')
+  res.json(orders)
+})
+//User schema is referenced in the Order schema | populate from user model, and get the user id and name

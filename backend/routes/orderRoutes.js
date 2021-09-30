@@ -4,12 +4,13 @@ import {
   addOrderItems,
   getMyOrders,
   getOrderById,
+  getOrders,
   updateOrderToPaid,
 } from '../controllers/orderController.js'
-import { protect } from '../middleware/authMiddleware.js'
+import { protect, admin } from '../middleware/authMiddleware.js'
 
-//To post created new order
-router.route('/').post(protect, addOrderItems)
+//To post created new order | To get all orders (admin access only)
+router.route('/').post(protect, addOrderItems).get(protect, admin, getOrders)
 
 //To get logged in users' orders
 router.route('/myorders').get(protect, getMyOrders)
