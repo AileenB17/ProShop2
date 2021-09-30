@@ -105,6 +105,7 @@ export const createProductReview = asyncHandler(async (req, res) => {
       user: req.user._id,
     }
 
+    //to add in the reviews array the new review submitted
     product.reviews.push(review)
 
     product.numReviews = product.reviews.length

@@ -2,6 +2,9 @@ import axios from 'axios'
 import {
   PRODUCT_CREATE_FAIL,
   PRODUCT_CREATE_REQUEST,
+  PRODUCT_CREATE_REVIEW_FAIL,
+  PRODUCT_CREATE_REVIEW_REQUEST,
+  PRODUCT_CREATE_REVIEW_SUCCESS,
   PRODUCT_CREATE_SUCCESS,
   PRODUCT_DELETE_FAIL,
   PRODUCT_DELETE_REQUEST,
@@ -172,3 +175,41 @@ export const updateProduct = (product) => async (dispatch, getState) => {
     })
   }
 }
+
+export const createProductReview =
+  (productId, review) => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: PRODUCT_CREATE_REVIEW_REQUEST,
+      })
+
+      //this will give us access to the logged in user's object
+      const {
+        userLogin: { userInfo },
+      } = getState()
+
+      //Sending headers and passed the token here thru protected routes
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
+
+      //POST request passing in the route with /:id (productId), review object, and the config
+      //{data} is not needed as the createProductReview controller is not going to return any data object
+      await axios.post(`/api/products/${productId}/reviews`, review, config)
+
+      dispatch({
+        type: PRODUCT_CREATE_REVIEW_SUCCESS,
+      })
+    } catch (error) {
+      dispatch({
+        type: PRODUCT_CREATE_REVIEW_FAIL,
+        payload:
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+      })
+    }
+  }
