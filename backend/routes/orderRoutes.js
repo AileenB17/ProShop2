@@ -5,6 +5,7 @@ import {
   getMyOrders,
   getOrderById,
   getOrders,
+  updateOrderToDelivered,
   updateOrderToPaid,
 } from '../controllers/orderController.js'
 import { protect, admin } from '../middleware/authMiddleware.js'
@@ -21,5 +22,8 @@ router.route('/:id').get(protect, getOrderById)
 
 //To update order to paid
 router.route('/:id/pay').put(protect, updateOrderToPaid)
+
+//To update order to delivered - admin access only
+router.route('/:id/deliver').put(protect, admin, updateOrderToDelivered)
 
 export default router

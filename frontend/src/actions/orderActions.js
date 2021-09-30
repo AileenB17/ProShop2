@@ -3,6 +3,9 @@ import {
   ORDER_CREATE_FAIL,
   ORDER_CREATE_REQUEST,
   ORDER_CREATE_SUCCESS,
+  ORDER_DELIVER_FAIL,
+  ORDER_DELIVER_REQUEST,
+  ORDER_DELIVER_SUCCESS,
   ORDER_DETAILS_FAIL,
   ORDER_DETAILS_REQUEST,
   ORDER_DETAILS_SUCCESS,
@@ -136,6 +139,47 @@ export const payOrder =
       })
     }
   }
+
+export const deliverOrder = (order) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: ORDER_DELIVER_REQUEST,
+    })
+
+    //this will give us access to the logged in user's object
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    //Sending headers and passed the token here thru protected routes
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    //PUT (update) request passing in the route with id (orderId), empty object and the config
+    //The updateOrderToDelivered controller will return updated order object
+    const { data } = await axios.put(
+      `/api/orders/${order._id}/deliver`,
+      {}, //pass an empty object as we are not sending any data but values will be updated in the controller
+      config
+    )
+
+    dispatch({
+      type: ORDER_DELIVER_SUCCESS,
+      payload: data,
+    })
+  } catch (error) {
+    dispatch({
+      type: ORDER_DELIVER_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}
 
 export const listMyOrders = () => async (dispatch, getState) => {
   try {

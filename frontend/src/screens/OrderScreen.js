@@ -2,14 +2,21 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { PayPalButton } from 'react-paypal-button-v2'
 import { Link } from 'react-router-dom'
-import { Row, Col, ListGroup, Image, Card } from 'react-bootstrap'
+import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { Message } from '../components/Message'
 import { Loader } from '../components/Loader'
-import { getOrderDetails, payOrder } from '../actions/orderActions'
-import { ORDER_PAY_RESET } from '../constants/orderConstants'
+import {
+  getOrderDetails,
+  payOrder,
+  deliverOrder,
+} from '../actions/orderActions'
+import {
+  ORDER_PAY_RESET,
+  ORDER_DELIVER_RESET,
+} from '../constants/orderConstants'
 
-export const OrderScreen = ({ match }) => {
+export const OrderScreen = ({ match, history }) => {
   const orderId = match.params.id
 
   //component leve state (sdk = software development kit)
@@ -25,8 +32,11 @@ export const OrderScreen = ({ match }) => {
   const { loading: loadingPay, success: successPay } = orderPay
   //loading: loadingPay - sample shortcut in renaming the data object to avoid duplication of variables
 
-  // const orderDeliver = useSelector((state) => state.orderDeliver)
-  // const { loading: loadingDeliver, success: successDeliver } = orderDeliver
+  const orderDeliver = useSelector((state) => state.orderDeliver)
+  const { loading: loadingDeliver, success: successDeliver } = orderDeliver
+
+  const userLogin = useSelector((state) => state.userLogin)
+  const { userInfo } = userLogin
 
   if (!loading) {
     //Calculate itemsPrice as this is not saved in the database from PlaceOrderScreen
@@ -39,6 +49,11 @@ export const OrderScreen = ({ match }) => {
   }
 
   useEffect(() => {
+    //checking if the user is logged in
+    if (!userInfo) {
+      history.push('/login')
+    }
+
     //dynamically adding the paypal script
     const addPayPalScript = async () => {
       const { data: clientId } = await axios.get('/api/config/paypal')
@@ -57,8 +72,9 @@ export const OrderScreen = ({ match }) => {
 
     //check for the order and also make sure that the order ID matches the ID in the URL.
     //If it does not, then dispatch getOrderDetails() to fetch the most recent order
-    if (!order || order._id !== orderId || successPay) {
+    if (!order || order._id !== orderId || successPay || successDeliver) {
       dispatch({ type: ORDER_PAY_RESET })
+      dispatch({ type: ORDER_DELIVER_RESET })
       dispatch(getOrderDetails(orderId))
     } else if (!order.isPaid) {
       if (!window.paypal) {
@@ -67,12 +83,17 @@ export const OrderScreen = ({ match }) => {
         setSdkReady(true)
       }
     }
-  }, [dispatch, order, orderId, successPay])
+  }, [dispatch, history, userInfo, order, orderId, successPay, successDeliver])
 
   //to call the payOrder action
   const successPaymentHandler = (paymentResult) => {
     console.log(paymentResult)
     dispatch(payOrder(orderId, paymentResult))
+  }
+
+  //to call the update order to delivered action
+  const deliverHandler = () => {
+    dispatch(deliverOrder(order))
   }
 
   return loading ? (
@@ -205,6 +226,27 @@ export const OrderScreen = ({ match }) => {
                   )}
                 </ListGroup.Item>
               )}
+
+              {loadingDeliver && <Loader />}
+
+              {/* to show the update to deliver option, check the ff:  */}
+              {/* if a user is logged in, user is admin, order is paid, order is not delivered */}
+              {/* if all conditions are met, show the button - Mark As Delivered */}
+
+              {userInfo &&
+                userInfo.isAdmin &&
+                order.isPaid &&
+                !order.isDelivered && (
+                  <ListGroup.Item className='d-grid gap-2'>
+                    <Button
+                      type='button'
+                      className='btn btn-block'
+                      onClick={deliverHandler}
+                    >
+                      Mark As Delivered
+                    </Button>
+                  </ListGroup.Item>
+                )}
             </ListGroup>
           </Card>
         </Col>
