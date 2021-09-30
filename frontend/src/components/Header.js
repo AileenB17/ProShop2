@@ -1,7 +1,9 @@
 import React from 'react'
+import { Route } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { LinkContainer } from 'react-router-bootstrap'
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap'
+import { SearchBox } from './SearchBox'
 import { logout } from '../actions/userActions'
 
 export const Header = () => {
@@ -24,6 +26,11 @@ export const Header = () => {
 
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
+            {/* use Route from react-router-dom and passed in render as a prop that will take in a function to return
+            SearchBox component which has now an access and can use the history prop from react-router-dom*/}
+
+            <Route render={({ history }) => <SearchBox history={history} />} />
+
             <Nav className='ms-auto'>
               <LinkContainer to='/cart'>
                 <Nav.Link>

@@ -3,7 +3,19 @@ import { Product } from '../models/productModel.js'
 
 //@desc Fetch all products | @route GET /api/products | @access Public
 export const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({})
+  //using req.query, we can access the keyword that has been passed in from the listProducts action (?keyword=)
+  //match the queried keyword with the name of the product
+  const keyword = req.query.keyword
+    ? {
+        name: {
+          $regex: req.query.keyword, //use regex to search without the need to match the full product name
+          $options: 'i', //case insensitive
+        },
+      }
+    : {} //else return empty if the keyword passed in is just empty string
+
+  //use of ...keyword - whatever the keyword value above either empty or matched / part of name
+  const products = await Product.find({ ...keyword })
 
   res.json(products)
 })

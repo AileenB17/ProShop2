@@ -20,25 +20,29 @@ import {
   PRODUCT_UPDATE_SUCCESS,
 } from '../constants/productConstants'
 
-//action creator - listProducts
-export const listProducts = () => async (dispatch) => {
-  try {
-    dispatch({ type: PRODUCT_LIST_REQUEST })
+//passing in from the HomeScreen the keyword but assigning here the default value as empty string
+//so we can still make the route worked even if no value of keyword has been sent
+export const listProducts =
+  (keyword = '') =>
+  async (dispatch) => {
+    try {
+      dispatch({ type: PRODUCT_LIST_REQUEST })
 
-    //{data} property is coming from the axios --- this is how we fetch data from backend
-    const { data } = await axios.get('/api/products')
+      //{data} property is coming from the axios --- this is how we fetch data from backend based on what the controller will return
+      //add query (?) here to: [1] Collect the keyword if search box is used or this can be an empty string
+      const { data } = await axios.get(`/api/products?keyword=${keyword}`)
 
-    dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data })
-  } catch (error) {
-    dispatch({
-      type: PRODUCT_LIST_FAIL,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
-    })
+      dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data })
+    } catch (error) {
+      dispatch({
+        type: PRODUCT_LIST_FAIL,
+        payload:
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+      })
+    }
   }
-}
 
 //function needs to take in an id
 export const listProductDetails = (id) => async (dispatch) => {

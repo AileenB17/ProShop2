@@ -6,7 +6,10 @@ import { Message } from '../components/Message'
 import { Loader } from '../components/Loader'
 import { listProducts } from '../actions/productActions'
 
-export const HomeScreen = () => {
+export const HomeScreen = ({ match }) => {
+  // we have access on match.params.keyword thru this route declared in App.js (path='/search/:keyword')
+  const keyword = match.params.keyword
+
   const dispatch = useDispatch()
 
   //pulling part of state using useSelector
@@ -17,8 +20,9 @@ export const HomeScreen = () => {
   //and will trigger a function to fetch the data (thru dispatch action) and update the products state (thru reducer)
 
   useEffect(() => {
-    dispatch(listProducts())
-  }, [dispatch])
+    //passing in keyword to listProducts action
+    dispatch(listProducts(keyword))
+  }, [dispatch, keyword])
 
   return (
     <>
