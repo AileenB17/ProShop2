@@ -153,12 +153,16 @@ export const ProductEditScreen = ({ match, history }) => {
                 type='file'
                 id='image-file'
                 label='Choose File'
-                custom
+                // custom
+                custom='true'
                 onChange={uploadFileHandler}
               ></input>
 
               {uploading && <Loader />}
             </Form.Group>
+
+            {/* Console Issue: Received `true` for a non-boolean attribute `custom` */}
+            {/* If you want to write it to the DOM, pass a string instead: custom="true" or custom={value.toString()}. */}
 
             <Form.Group controlId='brand'>
               <Form.Label>Brand</Form.Label>
