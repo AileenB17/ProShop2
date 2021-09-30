@@ -5,7 +5,7 @@ const reviewSchema = mongoose.Schema(
     name: { type: String, required: true },
     rating: { type: Number, required: true }, //individual rating unlike below rating w/c comprises average of all the review ratings
     comment: { type: String, required: true },
-    // user: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' }, //associate the user with the review
+    user: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' }, //associate the user with the review
   },
   { timestamps: true }
 )

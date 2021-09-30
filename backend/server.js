@@ -2,6 +2,7 @@ import path from 'path'
 import express from 'express'
 import dotenv from 'dotenv'
 import colors from 'colors'
+import morgan from 'morgan'
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
 import { connectDB } from './config/db.js'
 
@@ -17,6 +18,11 @@ connectDB()
 
 //initializing express
 const app = express()
+
+//for running morgan in development environment
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'))
+}
 
 //allow us to accept json data in the body (req.body)
 app.use(express.json())
