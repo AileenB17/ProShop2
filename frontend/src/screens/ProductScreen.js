@@ -5,6 +5,7 @@ import { Row, Col, Image, ListGroup, Card, Button, Form } from 'react-bootstrap'
 import { Rating } from '../components/Rating'
 import { Loader } from '../components/Loader'
 import { Message } from '../components/Message'
+import { Meta } from '../components/Meta'
 import {
   listProductDetails,
   createProductReview,
@@ -83,6 +84,9 @@ export const ProductScreen = ({ match, history }) => {
         <Message variant='danger'>{error}</Message>
       ) : (
         <>
+          {/* for browser title use Meta component*/}
+          <Meta title={`ProShop | ${product.name}`} />
+
           <Row>
             <Col md={6}>
               <Image src={product.image} alt={product.name} fluid />

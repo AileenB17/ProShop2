@@ -6,7 +6,9 @@ import { Message } from '../components/Message'
 import { Loader } from '../components/Loader'
 import { Paginate } from '../components/Paginate'
 import { ProductCarousel } from '../components/ProductCarousel'
+import { Meta } from '../components/Meta'
 import { listProducts } from '../actions/productActions'
+import { Link } from 'react-router-dom'
 
 export const HomeScreen = ({ match }) => {
   // we have access on match.params.keyword & pageNumber thru routes declared in App.js (ex: path='/search/:keyword')
@@ -30,8 +32,17 @@ export const HomeScreen = ({ match }) => {
 
   return (
     <>
-      {/* check if the user is using SearchBox, then no need to show product carousel */}
-      {!keyword && <ProductCarousel />}
+      {/* we can use the default props value declared in Meta component or define here*/}
+      <Meta />
+
+      {/* check if the user is using SearchBox, then no need to show product carousel but show Go Back button */}
+      {!keyword ? (
+        <ProductCarousel />
+      ) : (
+        <Link to='/' className='btn btn-light'>
+          Go Back
+        </Link>
+      )}
 
       <h2>Latest Products</h2>
       {loading ? (
