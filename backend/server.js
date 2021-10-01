@@ -27,10 +27,6 @@ if (process.env.NODE_ENV === 'development') {
 //allow us to accept json data in the body (req.body)
 app.use(express.json())
 
-app.get('/', (req, res) => {
-  res.send('API is running...')
-})
-
 //Access routes
 app.use('/api/products', productRoutes)
 app.use('/api/users', userRoutes)
@@ -46,6 +42,20 @@ app.get('/api/config/paypal', (req, res) =>
 //__dirname this is not available in es modules so use path.resolve() to act the same way
 const __dirname = path.resolve()
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
+
+//config for deployment
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '/frontend/build')))
+
+  //if any route that's not our API will point to the index.html
+  app.get('*', (req, res) =>
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
+  )
+} else {
+  app.get('/', (req, res) => {
+    res.send('API is running...')
+  })
+}
 
 //Custom error handling
 app.use(notFound)
