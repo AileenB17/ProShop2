@@ -190,14 +190,14 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
       payload: data,
     })
 
-    //add this user login to show the updated changes in the navbar username
-    // dispatch({
-    //   type: USER_LOGIN_SUCCESS,
-    //   payload: data,
-    // })
+    // add this user login to show the updated changes in the navbar username
+    dispatch({
+      type: USER_LOGIN_SUCCESS,
+      payload: data,
+    })
 
-    // //after user login success, this will update the localstorage
-    // localStorage.setItem('userInfo', JSON.stringify(data))
+    //after dispatch user login success, this will update the localstorage
+    localStorage.setItem('userInfo', JSON.stringify(data))
   } catch (error) {
     dispatch({
       type: USER_UPDATE_PROFILE_FAIL,

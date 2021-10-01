@@ -6,6 +6,7 @@ import { Message } from '../components/Message'
 import { Loader } from '../components/Loader'
 import { getUserDetails, updateUserProfile } from '../actions/userActions'
 import { listMyOrders } from '../actions/orderActions'
+import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'
 
 export const ProfileScreen = ({ location, history }) => {
   //component level state
@@ -34,7 +35,9 @@ export const ProfileScreen = ({ location, history }) => {
     if (!userInfo) {
       history.push('/login')
     } else {
-      if (!user.name) {
+      if (!user || !user.name || success) {
+        dispatch({ type: USER_UPDATE_PROFILE_RESET })
+
         dispatch(getUserDetails('profile')) //'profile' will be passed in to the action as the (id) not an actual user id
 
         //dipatch user logged in orders
@@ -46,7 +49,7 @@ export const ProfileScreen = ({ location, history }) => {
         setEmail(user.email)
       }
     }
-  }, [dispatch, history, user, userInfo])
+  }, [dispatch, history, success, user, userInfo])
 
   //dispatch update profile action after checking of password and confirm password
   const submitHandler = (e) => {
