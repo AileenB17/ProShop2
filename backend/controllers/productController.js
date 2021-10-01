@@ -146,3 +146,13 @@ export const createProductReview = asyncHandler(async (req, res) => {
     throw new Error('Product not found')
   }
 })
+
+// @desc Get top rated products | @route GET /api/products/top | @access Public
+
+export const getTopProducts = asyncHandler(async (req, res) => {
+  const products = await Product.find({}).sort({ rating: -1 }).limit(3)
+
+  res.json(products)
+})
+//created this for Top Products Carousel instead of adding conditionals in listProducts controller again
+//use of sort ('-' for ascending order) and limit for defining how many products you want to show

@@ -7,6 +7,7 @@ import {
   updateProduct,
   createProduct,
   createProductReview,
+  getTopProducts,
 } from '../controllers/productController.js'
 import { protect, admin } from '../middleware/authMiddleware.js'
 
@@ -15,6 +16,9 @@ router.route('/').get(getProducts).post(protect, admin, createProduct)
 
 //To post created review
 router.route('/:id/reviews').post(protect, createProductReview)
+
+//To get top products
+router.get('/top', getTopProducts)
 
 //To get, delete and update product for admin user's access only
 //any route with '/:id', make sure to put below the same route group because if not, anything we'll put after '/', will be treated as an :id

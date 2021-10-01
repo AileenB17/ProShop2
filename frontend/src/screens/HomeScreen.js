@@ -5,6 +5,7 @@ import { Product } from '../components/Product'
 import { Message } from '../components/Message'
 import { Loader } from '../components/Loader'
 import { Paginate } from '../components/Paginate'
+import { ProductCarousel } from '../components/ProductCarousel'
 import { listProducts } from '../actions/productActions'
 
 export const HomeScreen = ({ match }) => {
@@ -29,6 +30,9 @@ export const HomeScreen = ({ match }) => {
 
   return (
     <>
+      {/* check if the user is using SearchBox, then no need to show product carousel */}
+      {!keyword && <ProductCarousel />}
+
       <h2>Latest Products</h2>
       {loading ? (
         <Loader />
